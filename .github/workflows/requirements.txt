@@ -1,5 +1,32 @@
-yt-dlp[default]>=2025.09.26
-requests>=2.32.0
-# Plugin PO-token untuk yt-dlp (membantu melewati bot-check YouTube).
-# Butuh server bgutil berjalan di localhost:4416 — dinyalakan workflow.
-bgutil-ytdlp-pot-provider>=1.0.0
+name: Deploy Cloudflare Worker
+
+# Deploy Worker otomatis setiap ada perubahan di folder worker/ pada branch main.
+# Butuh repo secrets: CLOUDFLARE_API_TOKEN dan CLOUDFLARE_ACCOUNT_ID.
+# Kalau lebih suka deploy manual (`npx wrangler deploy`), file ini bisa dihapus.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "worker/**"
+      - "wrangler.toml"
+      - ".github/workflows/deploy-worker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy dengan Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # wrangler.toml ada di root repo, jadi deploy jalan dari root
+          command: deploy
