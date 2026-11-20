@@ -1,0 +1,5 @@
+yt-dlp[default]>=2025.09.26
+requests>=2.32.0
+# Plugin PO-token untuk yt-dlp (membantu melewati bot-check YouTube).
+# Butuh server bgutil berjalan di localhost:4416 — dinyalakan workflow.
+bgutil-ytdlp-pot-provider>=1.0.0
