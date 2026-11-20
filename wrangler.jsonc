@@ -1,0 +1,22 @@
+{
+  "name": "yt-telegram-bot",
+  "main": "src/index.js",
+  "compatibility_date": "2026-01-01",
+  "vars": {
+    // Isi setelah deploy pertama: https://yt-telegram-bot.<subdomain>.workers.dev
+    "WEBHOOK_URL": "",
+    "ALLOWED_USER_IDS": ""
+  },
+  "containers": [
+    {
+      "class_name": "YtBot",
+      "image": "./Dockerfile",
+      "instance_type": "basic",
+      "max_instances": 1
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "class_name": "YtBot", "name": "YT_BOT" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["YtBot"] }]
+}
