@@ -12,7 +12,7 @@ compatibility_date = "2024-12-01"
 #   TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET, GITHUB_TOKEN
 [vars]
 GITHUB_OWNER = "43VfQLAv0MTy"
-GITHUB_REPO = "yt-downloader-bot"
+GITHUB_REPO = "yt-downloader"
 GITHUB_REF = "main"
 ALLOWED_USER_IDS = ""
 # Proxy default yt-dlp (--proxy), dipakai bila user hanya kirim <link>.
