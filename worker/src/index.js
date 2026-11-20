@@ -25,14 +25,17 @@
  *   GITHUB_REPO              (var, wajib) nama repo ini
  *   GITHUB_REF               (var, opsional) default "main"
  *   ALLOWED_USER_IDS         (var, opsional) pisah koma, kosong = semua boleh
- *   YT_PROXY                 (var, opsional) proxy default yt-dlp, mis.
- *                            socks5:203.0.113.10:1080,
- *                            socks5://203.0.113.10:1080, atau
- *                            203.0.113.10:8080 (= http). User:pass
- *                            opsional. Kosong = tanpa proxy. Bila proxy
- *                            pakai username/password, JANGAN isi di sini
- *                            — isi GitHub secret YT_PROXY saja (Actions
- *                            memakainya bila Worker tidak mengirim proxy).
+ *   YT_PROXY                 (var, opsional) proxy DEFAULT yt-dlp.
+ *                            Isi apa pun boleh, dengan atau tanpa
+ *                            user:pass: socks5:203.0.113.10:1080,
+ *                            socks5://user:pass@203.0.113.10:1080,
+ *                            atau 203.0.113.10:8080 (= http).
+ *                            Kosong = tanpa proxy. Kalau terisi,
+ *                            itulah default-nya. Catatan: repo ini
+ *                            publik, jadi user:pass di sini terlihat
+ *                            di GitHub — kalau tidak mau bocor, isi
+ *                            GitHub secret YT_PROXY saja, itu juga
+ *                            default, sama saja.
  *
  * Proxy per-permintaan (custom / manual), dikirim user di chat.
  * Proxy gratis (mis. ProxyScrape) umumnya tanpa user:pass:

@@ -42,7 +42,7 @@ kecil ini wajar; untuk trafik besar, VPS tetap lebih cocok.
 
 ### 1. Buat repo & push project ini
 
-Buat dulu repo **43VfQLAv0MTy/yt-downloader-bot** di GitHub (kosong, tanpa README /
+Buat dulu repo **43VfQLAv0MTy/yt-downloader** di GitHub (kosong, tanpa README /
 .gitignore / license bawaan) kalau belum ada — per 19 Nov 2026 repo ini belum
 terlihat publik. Project lokal di ZIP ini sudah `git init` + commit + remote,
 jadi dari folder project tinggal:
@@ -76,7 +76,7 @@ GitHub → Settings → Developer settings → Personal access tokens → Fine-g
 
 ### 4. Deploy Worker ke Cloudflare
 
-`wrangler.toml` di root repo sudah diisi untuk repo ini: `GITHUB_OWNER = "43VfQLAv0MTy"`, `GITHUB_REPO = "yt-downloader-bot"`, `main = "worker/src/index.js"`.
+`wrangler.toml` di root repo sudah diisi untuk repo ini: `GITHUB_OWNER = "43VfQLAv0MTy"`, `GITHUB_REPO = "yt-downloader"`, `main = "worker/src/index.js"`.
 
 Cara A — otomatis: push ke `main`, workflow `deploy-worker.yml` akan deploy.
 
@@ -136,16 +136,25 @@ langkah, supaya tidak lolos probe lalu gagal download).
 
 **1. Proxy default — kirim link saja, proxy otomatis dipakai**
 
-Isi salah satu (urutan prioritas: `YT_PROXY` di wrangler.toml, lalu
-GitHub secret `YT_PROXY`):
+`YT_PROXY` itu **default**. Kalau terisi, dipakai. Mau pakai
+username/password atau tidak, tetap default.
 
-- `wrangler.toml` → `[vars]` → `YT_PROXY = "socks5:203.0.113.10:1080"`
-  (atau `http://203.0.113.10:8080`, atau `203.0.113.10:8080`).
-  Hanya untuk proxy **tanpa** username/password. Setelah diubah,
-  deploy ulang Worker.
-- GitHub repo → Settings → Secrets → `YT_PROXY` — untuk proxy
-  **dengan** username/password, mis. `socks5://user:pass@203.0.113.10:1080`.
-  Jangan taruh kredensial di `wrangler.toml`.
+Isi di salah satu tempat ini (kalau keduanya terisi, yang di
+`wrangler.toml` yang dipakai):
+
+- `wrangler.toml` → `[vars]` → misal
+  `YT_PROXY = "socks5:203.0.113.10:1080"` atau
+  `YT_PROXY = "socks5://user:pass@203.0.113.10:1080"`.
+  Setelah diubah, deploy ulang Worker.
+- GitHub repo → Settings → Secrets → `YT_PROXY` — tempat yang sama,
+  bedanya ini tersembunyi sebagai secret.
+
+⚠️ **Penting:** repo `yt-downloader` ini **publik**, jadi kalau kamu
+tulis `user:pass` di `wrangler.toml`, password proxy itu akan terlihat
+siapa pun yang buka repo. Kalau proxy kamu pakai user:pass dan kamu
+tidak mau bocor, kosongkan `YT_PROXY` di `wrangler.toml` dan isi
+secret `YT_PROXY` di GitHub saja — fungsinya sama persis, tetap
+default.
 
 **Format proxy yang diterima (user:pass opsional di semuanya):**
 

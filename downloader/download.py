@@ -19,8 +19,11 @@ Input lewat environment variable (bukan argumen shell, agar aman dari injection)
                       ProxyScrape):
                       http://203.0.113.10:8080, socks5://203.0.113.10:1080,
                       socks5:203.0.113.10:1080, 203.0.113.10:8080 (= http)
-  YT_PROXY            (opsional) proxy default, bentuknya sama seperti
-                      PROXY. Dipakai bila PROXY kosong.
+  YT_PROXY            (opsional) proxy DEFAULT, bentuknya sama seperti
+                      PROXY (dengan atau tanpa user:pass). Dipakai bila
+                      PROXY kosong. Isi lewat wrangler.toml, atau lewat
+                      GitHub secret YT_PROXY — keduanya default, yang
+                      di wrangler.toml didahulukan bila keduanya terisi.
                       Isi lewat GitHub secret YT_PROXY (disarankan bila
                       ada username/password) atau lewat variable
                       YT_PROXY di wrangler.toml (hanya bila tanpa

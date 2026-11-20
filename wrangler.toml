@@ -7,7 +7,7 @@ compatibility_date = "2024-12-01"
 # Kalau file ini hanya ada di subfolder, deploy gagal dengan error
 # "Could not detect a directory containing static files".
 #
-# Repo tujuan: github.com/43VfQLAv0MTy/yt-downloader-bot
+# Repo tujuan: github.com/43VfQLAv0MTy/yt-downloader
 # Secrets TIDAK ditulis di sini — set lewat Dashboard / `wrangler secret put`:
 #   TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET, GITHUB_TOKEN
 [vars]
@@ -15,10 +15,12 @@ GITHUB_OWNER = "43VfQLAv0MTy"
 GITHUB_REPO = "yt-downloader"
 GITHUB_REF = "main"
 ALLOWED_USER_IDS = ""
-# Proxy default yt-dlp (--proxy), dipakai bila user hanya kirim <link>.
-# Contoh: "socks5:203.0.113.10:1080", "socks5://203.0.113.10:1080",
-# atau "203.0.113.10:8080" (= http). User:pass opsional.
-# Kosong = tanpa proxy. Bila proxy pakai username/password, JANGAN isi
-# di sini — isi GitHub secret YT_PROXY saja (lebih aman, tidak tampil
-# di wrangler.toml / dashboard sebagai teks biasa).
+# YT_PROXY = proxy DEFAULT yt-dlp (--proxy), dipakai bila user hanya
+# kirim <link> (tanpa perintah proxy custom). Isi apa pun boleh:
+# tanpa user:pass ("socks5:203.0.113.10:1080", "203.0.113.10:8080")
+# maupun dengan user:pass ("socks5://user:pass@203.0.113.10:1080").
+# Kosong = tanpa proxy. Kalau terisi, itulah default-nya.
+# PERINGATAN: repo ini publik, jadi user:pass yang ditulis di sini
+# akan terlihat siapa pun di GitHub. Kalau tidak mau bocor, kosongkan
+# ini dan isi GitHub secret YT_PROXY saja — itu juga default, sama saja.
 YT_PROXY = ""

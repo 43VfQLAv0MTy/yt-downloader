@@ -1,6 +1,6 @@
-# Checklist Secrets & Variables — yt-downloader-bot
+# Checklist Secrets & Variables — yt-downloader
 
-Repo: `43VfQLAv0MTy/yt-downloader-bot` — Worker: `youtube-telegram-bot`
+Repo: `43VfQLAv0MTy/yt-downloader` — Worker: `youtube-telegram-bot`
 
 ## A. GitHub Repo — Secrets
 
@@ -27,16 +27,16 @@ Variables and Secrets** — atau `npx wrangler secret put <NAMA>`
 |---|---|
 | `TELEGRAM_BOT_TOKEN` | Token yang **sama** dengan di GitHub (Worker memakainya untuk balas pesan / kirim tombol ke Telegram) |
 | `TELEGRAM_WEBHOOK_SECRET` | String acak panjang buatanmu sendiri (contoh: hasil password generator, 32+ karakter). Dipakai juga saat membuka `/set-webhook?secret=...` |
-| `GITHUB_TOKEN` | Fine-grained PAT: hanya repo `yt-downloader-bot`, permission **Actions: Read and write** |
+| `GITHUB_TOKEN` | Fine-grained PAT: hanya repo `yt-downloader`, permission **Actions: Read and write** |
 
 ## C. Cloudflare Worker — Variables (teks biasa, sudah diisi di `wrangler.toml`)
 
 | Nama | Nilai |
 |---|---|
 | `GITHUB_OWNER` | `43VfQLAv0MTy` |
-| `GITHUB_REPO` | `yt-downloader-bot` |
+| `GITHUB_REPO` | `yt-downloader` |
 | `GITHUB_REF` | `main` |
-| `YT_PROXY` | *(kosong = tanpa proxy)* — proxy default yt-dlp, mis. `socks5:203.0.113.10:1080` atau `203.0.113.10:8080`. **Hanya tanpa kredensial**; bila ada username/password, isi GitHub secret `YT_PROXY` (tabel A) saja, bukan di sini |
+| `YT_PROXY` | *(kosong = tanpa proxy)* — proxy **default** yt-dlp, mis. `socks5:203.0.113.10:1080`, `203.0.113.10:8080`, atau `socks5://user:pass@203.0.113.10:1080`. Dengan atau tanpa user:pass, kalau terisi itulah default-nya. ⚠️ Repo ini publik — user:pass di sini terlihat di GitHub; kalau tidak mau bocor, isi GitHub secret `YT_PROXY` (tabel A) saja |
 | `ALLOWED_USER_IDS` | *(kosong = semua boleh)* — isi ID Telegram pisah koma kalau mau dibatasi |
 
 ## E. Proxy custom per pesan (bukan secret, dikirim di chat)
