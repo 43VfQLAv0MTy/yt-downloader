@@ -1,0 +1,1 @@
+{"devDependencies":{"wrangler":"^3.90.0"},"name":"youtube-telegram-bot-worker","private":true,"scripts":{"deploy":"wrangler deploy","dev":"wrangler dev"},"type":"module","version":"1.0.0"}
