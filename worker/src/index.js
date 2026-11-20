@@ -266,6 +266,7 @@ async function handleMessage(env, message) {
         "🎵 <b>Audio</b> — MP3 / M4A\n\n" +
         "🔒 <b>Proxy (anti bot-check YouTube)</b>\n" +
         "Kirim link saja = pakai proxy default (YT_PROXY) bila sudah diset.\n" +
+        "Cek proxy default yang aktif: <code>/proxy</code>\n" +
         "Proxy custom per-permintaan:\n" +
         "<code>proxy socks5:IP:PORT https://youtu.be/xxxx</code>\n" +
         "Skema: http://, https://, socks4://, socks5:// —\n" +
@@ -273,6 +274,23 @@ async function handleMessage(env, message) {
         "atau IP:PORT saja (= http)\n\n" +
         "⚠️ Pengecekan &amp; download dijalankan di GitHub Actions, jadi " +
         "masing-masing butuh sekitar 1-3 menit. Batas file 50 MB.",
+    });
+    return;
+  }
+
+  // Perintah /proxy: cek proxy default (YT_PROXY) yang dipakai bot.
+  // Hanya yang Worker ketahui (Variable di Cloudflare) yang bisa
+  // ditampilkan; password selalu disamarkan. Bila YT_PROXY di sini
+  // kosong, download masih bisa memakai GitHub secret YT_PROXY —
+  // nilainya tidak bisa dilihat dari Worker.
+  if (text.startsWith("/proxy")) {
+    const def = (env.YT_PROXY || "").trim();
+    await tg(env, "sendMessage", {
+      chat_id: chatId,
+      parse_mode: "HTML",
+      text: def
+        ? `🔒 <b>Proxy default (YT_PROXY)</b>\n<code>${escapeHtml(maskProxy(def))}</code>\n\nProxy ini dipakai kalau kamu kirim link saja (tanpa perintah proxy custom). Password disembunyikan.\n\nCatatan: GitHub secret YT_PROXY (cadangan di Actions) tidak terlihat dari sini.`
+        : "🔒 <b>Proxy default (YT_PROXY)</b>\nTidak diset — bot berjalan tanpa proxy.\n\nIsi YT_PROXY di Cloudflare Dashboard (Variable) atau GitHub secret YT_PROXY untuk memakai proxy default.",
     });
     return;
   }
