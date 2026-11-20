@@ -15,7 +15,7 @@ Telegram → Worker (`src/index.js`, verifikasi secret) → Container (`bot.py` 
     npx wrangler secret put WEBHOOK_SECRET     # string acak panjang
     npx wrangler deploy
 
-1. Salin URL Worker dari output deploy, isi `WEBHOOK_URL` di `wrangler.jsonc`, lalu `npx wrangler deploy` lagi.
+1. Salin URL Worker dari output deploy, isi `WEBHOOK_URL` di `wrangler.toml`, lalu `npx wrangler deploy` lagi.
 2. Buka URL Worker itu di browser sekali (membangunkan container; bot mendaftarkan webhook).
 3. Kirim `/start` ke botmu.
 
