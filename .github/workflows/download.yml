@@ -1,0 +1,122 @@
+name: YouTube Download
+
+# Dipicu oleh Cloudflare Worker lewat REST API workflow_dispatch,
+# bisa juga dijalankan manual dari tab Actions.
+on:
+  workflow_dispatch:
+    inputs:
+      chat_id:
+        description: "ID chat Telegram tujuan"
+        required: true
+        type: string
+      youtube_url:
+        description: "Link YouTube"
+        required: true
+        type: string
+      format_choice:
+        description: "Format yang dipilih user (statis atau dinamis v<tinggi>, mis. v1440)"
+        required: false
+        default: "vid_720"
+        type: string
+      mode:
+        description: "download = unduh & kirim file | probe = cek format & ukuran lalu kirim tombol dinamis"
+        required: false
+        default: "download"
+        type: string
+      probe_message_id:
+        description: "(mode probe) ID pesan placeholder dari Worker"
+        required: false
+        default: ""
+        type: string
+      proxy:
+        description: "Proxy custom / default dari Worker (http/https/socks4/socks5), kosong = pakai GitHub secret YT_PROXY bila ada"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+# Satu antrean per chat: download dari chat yang sama tidak saling tabrak,
+# chat berbeda tetap bisa jalan bersamaan.
+concurrency:
+  group: download-${{ inputs.chat_id }}
+  cancel-in-progress: false
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install dependencies
+        run: pip install -U -r downloader/requirements.txt
+
+      # Cookies YouTube bersifat OPSIONAL (secret YOUTUBE_COOKIES, format
+      # Netscape cookies.txt). Hanya ditulis ke file bila secret terisi.
+      # Step ini sengaja SEBELUM bgutil: smoke test bgutil memakai file ini.
+      - name: Siapkan cookies YouTube (opsional)
+        env:
+          YT_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
+        run: |
+          if [ -n "$YT_COOKIES" ]; then
+            printf '%s' "$YT_COOKIES" > "$RUNNER_TEMP/yt-cookies.txt"
+            echo "YT_COOKIES_FILE=$RUNNER_TEMP/yt-cookies.txt" >> "$GITHUB_ENV"
+            echo "Cookies YouTube terpasang dari secret."
+          else
+            echo "Secret YOUTUBE_COOKIES kosong, lanjut tanpa cookies."
+          fi
+
+      # Server PO-token (bgutil) mengotorisasi URL format client web
+      # (web, mweb, tv, web_embedded) agar tidak kena HTTP 403 saat unduh.
+      # Kegagalan di step ini TIDAK menggagalkan run — log step ini memuat
+      # status server + hasil smoke test untuk diagnosis.
+      - name: Nyalakan server PO-token bgutil (opsional)
+        continue-on-error: true
+        run: |
+          node --version; npm --version
+          git clone --depth 1 https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git /tmp/bgutil
+          cd /tmp/bgutil/server
+          npm install --no-audit --no-fund
+          npx tsc
+          nohup node build/main.js > /tmp/bgutil.log 2>&1 &
+          for i in $(seq 1 15); do
+            curl -s http://127.0.0.1:4416/ > /dev/null && break || sleep 2
+          done
+          echo "--- Respons server bgutil ---"
+          curl -s http://127.0.0.1:4416/ || echo "bgutil tidak merespons"
+          echo "--- Log server bgutil ---"
+          tail -20 /tmp/bgutil.log || true
+          echo "--- Smoke test PO-token (client web + fetch_pot=always) ---"
+          if [ -n "$YT_COOKIES_FILE" ]; then
+            yt-dlp --verbose --simulate -f bestaudio --cookies "$YT_COOKIES_FILE" --extractor-args "youtube:player_client=web;fetch_pot=always" "https://www.youtube.com/watch?v=aqz-KE-bpKQ" 2>&1 | grep -iE "pot|token provider" | head -10 || true
+          else
+            yt-dlp --verbose --simulate -f bestaudio --extractor-args "youtube:player_client=web;fetch_pot=always" "https://www.youtube.com/watch?v=aqz-KE-bpKQ" 2>&1 | grep -iE "pot|token provider" | head -10 || true
+          fi
+
+      - name: Download / probe & kirim ke Telegram
+        env:
+          # Input diteruskan lewat env, BUKAN ditempel langsung di script run,
+          # supaya tidak bisa dipakai untuk injeksi perintah shell.
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ inputs.chat_id }}
+          YOUTUBE_URL: ${{ inputs.youtube_url }}
+          FORMAT_CHOICE: ${{ inputs.format_choice }}
+          MODE: ${{ inputs.mode }}
+          PROBE_MESSAGE_ID: ${{ inputs.probe_message_id }}
+          # Proxy: input dari Worker (custom, lalu YT_PROXY wrangler.toml)
+          # didahulukan; bila kosong, download.py memakai GitHub secret
+          # YT_PROXY sebagai default. Jangan echo nilai ini ke log.
+          PROXY: ${{ inputs.proxy }}
+          YT_PROXY: ${{ secrets.YT_PROXY }}
+        run: python downloader/download.py
