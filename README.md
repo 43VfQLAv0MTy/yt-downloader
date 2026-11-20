@@ -139,6 +139,13 @@ langkah, supaya tidak lolos probe lalu gagal download).
 `YT_PROXY` itu **default**. Kalau terisi, dipakai. Mau pakai
 username/password atau tidak, tetap default.
 
+Cek proxy default yang sedang aktif di bot: kirim `/proxy` ke bot.
+Bot membalas proxy-nya dalam bentuk tersamar, mis.
+`socks5://user:***@203.0.113.10:1080`, atau "Tidak diset" kalau
+`YT_PROXY` kosong. Yang ditampilkan adalah `YT_PROXY` dari Variable
+Worker (Cloudflare); GitHub secret `YT_PROXY` (cadangan di Actions)
+tidak terlihat dari Worker.
+
 Isi di salah satu tempat ini (kalau keduanya terisi, yang di
 `wrangler.toml` yang dipakai):
 
